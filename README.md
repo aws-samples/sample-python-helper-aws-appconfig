@@ -6,7 +6,7 @@ A helper library for AWS AppConfig which makes rolling configuration updates out
 
 ## Features
 
-* Configurable update interval: you can ask the library to update your configuration as often as needed, but it will only call the AWS AppConfig API at the configured interval.
+* Configurable update interval: you can ask the library to update your configuration as often as needed, but it will only call the AWS AppConfig API at the configured interval (in seconds).
 * Uses best practices for updates: the API is called with the version of the last received configuration, which results in a lower charge for the API call if no new configuration has been deployed. Automatically generates a client ID if you do not specify one.
 * Flexible: Can automatically fetch the current configuration on initialisation, every time the configuration is read by your code, or on demand. You can override the caching interval if needed.
 * Handles YAML, JSON and plain text configurations, stored in any supported AppConfig store.

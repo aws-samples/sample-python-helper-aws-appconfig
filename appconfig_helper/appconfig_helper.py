@@ -33,7 +33,8 @@ class AppConfigHelper:
     `max_config_age` is the minimum interval in seconds between attempts to
     update the configuration. Set it low enough that your application
     receives new configuration in good time, but not so high that you are
-    unnecessarily polling the AWS AppConfig service.
+    unnecessarily polling the AWS AppConfig service. A minimum of 15 seconds
+    is enforced to help avoid throttling.
 
     If you need to override credentials or AWS Region, set `session` to a
     preconfigured `boto3.Session` object.
@@ -68,8 +69,8 @@ class AppConfigHelper:
         self._appconfig_profile = appconfig_profile
         self._appconfig_environment = appconfig_environment
         self._appconfig_application = appconfig_application
-        if max_config_age < 0:
-            raise ValueError("max_config_age must be at least 0")
+        if max_config_age < 15:
+            raise ValueError("max_config_age must be at least 15 seconds")
         self._max_config_age = max_config_age
         if client_id is None:
             self._client_id = socket.gethostname()

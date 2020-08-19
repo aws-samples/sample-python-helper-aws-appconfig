@@ -68,7 +68,7 @@ def _build_response(content, version, content_type):
 def test_appconfig_init(appconfig_stub, mocker):
     client, stub, _ = appconfig_stub
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
 
     assert isinstance(a, AppConfigHelper)
     assert a.appconfig_application == "AppConfig-App"
@@ -87,7 +87,7 @@ def test_appconfig_update(appconfig_stub, mocker):
         _build_request(),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     result = a.update_config()
     assert result
     assert a.config == "hello"
@@ -102,7 +102,7 @@ def test_appconfig_update_interval(appconfig_stub, mocker):
         _build_request(),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     result = a.update_config()
     assert result
     assert a.config == "hello"
@@ -127,7 +127,7 @@ def test_appconfig_force_update_same(appconfig_stub, mocker):
         _build_request(version="1"),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     result = a.update_config()
     assert result
     assert a.config == "hello"
@@ -152,7 +152,7 @@ def test_appconfig_force_update_new(appconfig_stub, mocker):
         _build_request(version="1"),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     result = a.update_config()
     assert result
     assert a.config == "hello"
@@ -173,13 +173,13 @@ def test_appconfig_fetch_on_init(appconfig_stub, mocker):
     )
     mocker.patch.object(boto3, "client", return_value=client)
     a = AppConfigHelper(
-        "AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10, fetch_on_init=True
+        "AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15, fetch_on_init=True
     )
     assert a.config == "hello"
     assert a.config_version == "1"
 
 
-@freeze_time("2020-08-01 12:00:00", auto_tick_seconds=15)
+@freeze_time("2020-08-01 12:00:00", auto_tick_seconds=20)
 def test_appconfig_fetch_on_read(appconfig_stub, mocker):
     client, stub, _ = appconfig_stub
     stub.add_response(
@@ -194,7 +194,7 @@ def test_appconfig_fetch_on_read(appconfig_stub, mocker):
     )
     mocker.patch.object(boto3, "client", return_value=client)
     a = AppConfigHelper(
-        "AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10, fetch_on_read=True
+        "AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15, fetch_on_read=True
     )
     assert a.config == "hello"
     assert a.config_version == "1"
@@ -202,7 +202,7 @@ def test_appconfig_fetch_on_read(appconfig_stub, mocker):
     assert a.config_version == "2"
 
 
-@freeze_time("2020-08-01 12:00:00", auto_tick_seconds=7)
+@freeze_time("2020-08-01 12:00:00", auto_tick_seconds=10)
 def test_appconfig_fetch_interval(appconfig_stub, mocker):
     client, stub, _ = appconfig_stub
     stub.add_response(
@@ -216,7 +216,7 @@ def test_appconfig_fetch_interval(appconfig_stub, mocker):
         _build_request(version="1"),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     result = a.update_config()
     assert result
     assert a.config == "hello"
@@ -241,7 +241,7 @@ def test_appconfig_yaml(appconfig_stub, mocker):
         _build_request(),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     a.update_config()
     assert a.config == {"hello": "world"}
     assert a.config_version == "1"
@@ -255,7 +255,7 @@ def test_appconfig_json(appconfig_stub, mocker):
         _build_request(),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     a.update_config()
     assert a.config == {"hello": "world"}
     assert a.config_version == "1"
@@ -270,7 +270,7 @@ def test_appconfig_client(appconfig_stub, mocker):
     )
     mocker.patch.object(boto3, "client", return_value=client)
     a = AppConfigHelper(
-        "AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10, client_id="hello",
+        "AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15, client_id="hello",
     )
     a.update_config()
 
@@ -285,7 +285,7 @@ def test_appconfig_session(appconfig_stub, mocker):
     mocker.patch.object(boto3, "client", return_value=client)
     mocker.patch.object(boto3.Session, "client", return_value=client)
     a = AppConfigHelper(
-        "AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10, session=session
+        "AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15, session=session
     )
     a.update_config()
 
@@ -305,7 +305,7 @@ def test_bad_json(appconfig_stub, mocker):
         _build_request(),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     with pytest.raises(ValueError):
         a.update_config()
 
@@ -331,7 +331,7 @@ def test_bad_yaml(appconfig_stub, mocker):
         _build_request(),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     with pytest.raises(ValueError):
         a.update_config()
 
@@ -351,7 +351,7 @@ def test_bad_content_type(appconfig_stub, mocker):
         _build_request(),
     )
     mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 10)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     with pytest.raises(ValueError):
         a.update_config()
 
@@ -372,5 +372,12 @@ def test_bad_request(appconfig_stub_ignore_pendng, mocker):
     )
     mocker.patch.object(boto3, "client", return_value=client)
     with pytest.raises(botocore.exceptions.ParamValidationError):
-        a = AppConfigHelper("", "", "", 10)
+        a = AppConfigHelper("", "", "", 15)
         a.update_config()
+
+
+def test_bad_interval(appconfig_stub, mocker):
+    client, stub, session = appconfig_stub
+    mocker.patch.object(boto3, "client", return_value=client)
+    with pytest.raises(ValueError):
+        _ = AppConfigHelper("Any", "Any", "Any", 10)
