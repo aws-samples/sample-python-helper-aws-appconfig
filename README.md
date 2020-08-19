@@ -1,6 +1,6 @@
-# AWS AppConfig Helper
+# Sample AWS AppConfig Helper
 
-A helper library for AWS AppConfig which makes rolling configuration updates out easier.
+A sample helper Python library for AWS AppConfig which makes rolling configuration updates out easier.
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aws-appconfig-helper) ![PyPI version](https://badge.fury.io/py/aws-appconfig-helper.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -10,7 +10,7 @@ A helper library for AWS AppConfig which makes rolling configuration updates out
 * Uses best practices for updates: the API is called with the version of the last received configuration, which results in a lower charge for the API call if no new configuration has been deployed. Automatically generates a client ID if you do not specify one.
 * Flexible: Can automatically fetch the current configuration on initialisation, every time the configuration is read by your code, or on demand. You can override the caching interval if needed.
 * Handles YAML, JSON and plain text configurations, stored in any supported AppConfig store.
-* Supports AWS Lambda, Amazon EC2 instances and on-premises use
+* Supports AWS Lambda, Amazon EC2 instances and on-premises use.
 
 ## Installation
 
@@ -27,12 +27,13 @@ appconfig = AppConfigHelper(
     "MyAppConfigApp",
     "MyAppConfigEnvironment",
     "MyAppConfigProfile",
-    30
+    30  # minimum interval between update checks
 )
 
 def lambda_handler(event, context):
     if appconfig.update_config():
         print("New configuration received")
+    # your configuration is available in the "config" attribute
     return {
         "statusCode": 200,
         "body": appconfig.config
@@ -45,13 +46,13 @@ Please see the [AWS AppConfig documentation](https://docs.aws.amazon.com/appconf
 
 ### Initialising
 
-Start by creating an `AppConfigHelper` object. You must specify the application name, environment name, and profile (configuration) name. You must also specify the refresh interval, in seconds. AppConfigHelper will not attempt to fetch a new configuration version from the AWS AppConfig service more frequently than this interval. You should set it low enough that your code will receive new configuration promptly, but not so low that it takes too long.
+Start by creating an `AppConfigHelper` object. You must specify the application name, environment name, and profile (configuration) name. You must also specify the refresh interval, in seconds. AppConfigHelper will not attempt to fetch a new configuration version from the AWS AppConfig service more frequently than this interval. You should set it low enough that your code will receive new configuration promptly, but not so low that it takes too long. The library enforces a minimum interval of 15 seconds.
 
 The configuration is not automatically fetched unless you set `fetch_on_init`. To have the library fetch the configuration when it is accessed, if it has been more than `max_config_age` seconds since the last fetch, set `fetch_on_read`.
 
-If you need to customise the AWS credentials or region, set `session` to configured `boto3.Session` object. Otherwise, the standard boto3 logic for credential/configuration discovery is used.
+If you need to customise the AWS credentials or region, set `session` to a configured `boto3.Session` object. Otherwise, the [standard boto3 logic](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html) for credential/configuration discovery is used.
 
-AWS AppConfig needs clients to specify a unique client ID to allow deployment strategies to work correctly. The library will automatically use the hostname, but you can override it with `client_id`.
+AWS AppConfig needs clients to specify a unique client ID to allow deployment strategies to work correctly. The library will automatically use the hostname, but you can override it with `client_id`. (The specific value does not matter, but it should be different for each client, and should not change.)
 
 ### Reading the configuration
 
