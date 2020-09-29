@@ -151,12 +151,12 @@ class AppConfigHelper:
                     message = message + " at line {} column {}".format(
                         error.problem_mark.line + 1, error.problem_mark.column + 1
                     )
-                raise ValueError(message)
+                raise ValueError(message) from error
         elif response["ContentType"] == "application/json":
             try:
                 self._config = json.loads(response["Content"].read().decode("utf-8"))
             except json.JSONDecodeError as error:
-                raise ValueError(error.msg)
+                raise ValueError(error.msg) from error
         elif response["ContentType"] == "text/plain":
             self._config = response["Content"].read().decode("utf-8")
         else:
