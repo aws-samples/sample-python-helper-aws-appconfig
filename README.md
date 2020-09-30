@@ -22,6 +22,7 @@ pip install aws-appconfig-helper
 
 ```python
 from appconfig_helper import AppConfigHelper
+from fastapi import FastAPI
 
 appconfig = AppConfigHelper(
     "MyAppConfigApp",
@@ -30,13 +31,15 @@ appconfig = AppConfigHelper(
     30  # minimum interval between update checks
 )
 
-def lambda_handler(event, context):
+app = FastAPI()
+
+@app.get("/some-url")
+def index():
     if appconfig.update_config():
         print("New configuration received")
     # your configuration is available in the "config" attribute
     return {
-        "statusCode": 200,
-        "body": appconfig.config
+        "config_info": appconfig.config
     }
 ```
 
