@@ -1,7 +1,8 @@
 import os
 
-from appconfig_helper import AppConfigHelper
 from fastapi import FastAPI
+
+from appconfig_helper import AppConfigHelper
 
 app = FastAPI()
 

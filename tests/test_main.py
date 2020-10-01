@@ -10,10 +10,11 @@ import botocore.exceptions
 import botocore.session
 import pytest
 import yaml
-from appconfig_helper import AppConfigHelper
 from botocore.response import StreamingBody
 from botocore.stub import Stubber
 from freezegun import freeze_time
+
+from appconfig_helper import AppConfigHelper
 
 
 @pytest.fixture(autouse=True)
@@ -270,7 +271,11 @@ def test_appconfig_client(appconfig_stub, mocker):
     )
     mocker.patch.object(boto3, "client", return_value=client)
     a = AppConfigHelper(
-        "AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15, client_id="hello",
+        "AppConfig-App",
+        "AppConfig-Env",
+        "AppConfig-Profile",
+        15,
+        client_id="hello",
     )
     a.update_config()
 
