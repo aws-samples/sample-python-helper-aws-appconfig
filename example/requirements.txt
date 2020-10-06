@@ -1,4 +1,3 @@
 fastapi
 uvicorn
-python-dotenv
--e /Users/sewardjm/src/aws-appconfig-helper
+# TODO: add package name
