@@ -16,3 +16,7 @@ repos:
     rev: v5.5.4  # pick the isort version you'd like to use from https://github.com/pre-commit/mirrors-isort/releases
     hooks:
     -   id: isort
+- repo: https://gitlab.com/pycqa/flake8
+  rev: 3.8.4
+  hooks:
+    - id: flake8
