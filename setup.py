@@ -11,10 +11,11 @@ with open(os.path.join(here, "README.md"), "r") as f:
     long_description = f.read()
 
 setup(
-    name="aws_appconfig_helper",
+    name="sample-helper-aws-appconfig",
     version=about["VERSION"],
-    description="AWS AppConfig Helper",
+    description="Sample Helper for AWS AppConfig",
     author="Amazon Web Services",
+    url="https://github.com/aws-samples/sample-python-helper-aws-appconfig",
     packages=find_packages(),
     install_requires=["boto3 >= 1.10.27", "pyyaml"],
     python_requires=">=3.6",

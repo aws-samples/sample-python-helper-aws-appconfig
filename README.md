@@ -2,20 +2,20 @@
 
 A sample helper Python library for AWS AppConfig which makes rolling configuration updates out easier.
 
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aws-appconfig-helper) ![PyPI version](https://badge.fury.io/py/aws-appconfig-helper.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sample-helper-aws-appconfig) ![PyPI version](https://badge.fury.io/py/sample-helper-aws-appconfig.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Features
 
 * Configurable update interval: you can ask the library to update your configuration as often as needed, but it will only call the AWS AppConfig API at the configured interval (in seconds).
 * Uses best practices for updates: the API is called with the version of the last received configuration, which results in a lower charge for the API call if no new configuration has been deployed. Automatically generates a client ID if you do not specify one.
 * Flexible: Can automatically fetch the current configuration on initialisation, every time the configuration is read by your code, or on demand. You can override the caching interval if needed.
-* Handles YAML, JSON and plain text configurations, stored in any supported AppConfig store.
+* Handles YAML, JSON and plain text configurations, stored in any supported AppConfig store. Any other content type is returned unprocessed as the Python `bytes` type.
 * Supports AWS Lambda, Amazon EC2 instances and on-premises use.
 
 ## Installation
 
 ```bash
-pip install aws-appconfig-helper
+pip install sample-helper-aws-appconfig
 ```
 
 ## Example
@@ -28,7 +28,7 @@ appconfig = AppConfigHelper(
     "MyAppConfigApp",
     "MyAppConfigEnvironment",
     "MyAppConfigProfile",
-    30  # minimum interval between update checks
+    45  # minimum interval between update checks
 )
 
 app = FastAPI()
@@ -61,7 +61,7 @@ AWS AppConfig needs clients to specify a unique client ID to allow deployment st
 
 The configuration from AWS AppConfig is available as the `config` property. Before accessing it, you should call `update_config()`, unless you specified fetch_on_init or fetch_on_read during initialisation. If you want to force a config fetch, even if the number of seconds specified have not yet passed, call `update_config(True)`.
 
-`update_config()` returns `True` if a new version of the configuration was received. If no attempt was made to fetch it, or the configuration received was the same as current one, it returns `False`. It will raise `ValueError` if the received configuration data could not be processed (e.g. invalid JSON, unknown type). If needed, the inner exception for JSON or YAML parsing is available as `__context__` on the raised exception.
+`update_config()` returns `True` if a new version of the configuration was received. If no attempt was made to fetch it, or the configuration received was the same as current one, it returns `False`. It will raise `ValueError` if the received configuration data could not be processed (e.g. invalid JSON). If needed, the inner exception for JSON or YAML parsing is available as `__context__` on the raised exception.
 
 To read the values in your configuration, access the `config` property. For JSON and YAML configurations, this will contain the structure of your data. For plain text configurations, this will be a simple string.
 
@@ -88,17 +88,9 @@ you would see the following when using the library:
 
 You can check which version of the configuration was last received by examining the `config_version` property. Note that this value is opaque and depends on the service being used to store the configuration data. For example, if Amazon S3 is being used, then the version will be the version identifier of the object, not an integer.
 
-### Creating a Lambda layer
+### Use in AWS Lambda
 
-To create a Lambda layer containing the library, follow these steps:
-
-1. In a temporary directory, `mkdir python`
-1. Install the library in the python directory: `pip install -t python aws-appconfig-helper`
-1. Create a zip file containing the installed library: `zip -r layer.zip python`
-1. Upload the zip file as a Lambda layer (e.g. via the AWS Console)
-
-You can now specify the layer in your function configuration to have it included.
-
+AWS AppConfig is best used in Lambda by taking advantage of [Lambda Extensions](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-integration-lambda-extensions.html)
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
