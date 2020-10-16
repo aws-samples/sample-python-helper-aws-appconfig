@@ -341,7 +341,7 @@ def test_bad_yaml(appconfig_stub, mocker):
         a.update_config()
 
 
-def test_bad_content_type(appconfig_stub, mocker):
+def test_unknown_content_type(appconfig_stub, mocker):
     client, stub, session = appconfig_stub
     content_text = """hello world""".encode("utf-8")
     stub.add_response(
@@ -357,8 +357,8 @@ def test_bad_content_type(appconfig_stub, mocker):
     )
     mocker.patch.object(boto3, "client", return_value=client)
     a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
-    with pytest.raises(ValueError):
-        a.update_config()
+    a.update_config()
+    assert a.config == b"hello world"
 
 
 def test_bad_request(appconfig_stub_ignore_pendng, mocker):

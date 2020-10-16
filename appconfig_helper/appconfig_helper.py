@@ -78,7 +78,7 @@ class AppConfigHelper:
             self._client_id = client_id
         self._configuration_version = "null"  # type: str
         self._last_update_time = 0.0
-        self._config = None  # type: Union[None, Dict[Any, Any], str]
+        self._config = None  # type: Union[None, Dict[Any, Any], str, bytes]
         self._fetch_on_read = fetch_on_read
         if fetch_on_init:
             self.update_config()
@@ -104,7 +104,7 @@ class AppConfigHelper:
         return self._configuration_version
 
     @property
-    def config(self) -> Union[None, Dict[Any, Any], str]:
+    def config(self) -> Union[None, Dict[Any, Any], str, bytes]:
         """The application configuration content.
 
         If initialsed with `fetch_on_read` = True, will attempt to update the
@@ -160,9 +160,7 @@ class AppConfigHelper:
         elif response["ContentType"] == "text/plain":
             self._config = response["Content"].read().decode("utf-8")
         else:
-            raise ValueError(
-                "Unsupported content type {}".format(response["ContentType"])
-            )
+            self._config = response["Content"].read()
 
         self._last_update_time = time.time()
         self._configuration_version = response["ConfigurationVersion"]
