@@ -91,6 +91,7 @@ You can check which version of the configuration was last received by examining 
 ### Use in AWS Lambda
 
 AWS AppConfig is best used in Lambda by taking advantage of [Lambda Extensions](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-integration-lambda-extensions.html)
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
