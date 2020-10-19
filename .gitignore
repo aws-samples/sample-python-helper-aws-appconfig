@@ -1,3 +1,4 @@
 .tox
 dist
 *.egg-info
+.python-version
