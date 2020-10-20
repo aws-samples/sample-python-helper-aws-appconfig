@@ -15,6 +15,7 @@ setup(
     version=about["VERSION"],
     description="Sample helper library for AWS AppConfig",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Amazon Web Services",
     maintainer="James Seward",
     maintainer_email="sewardjm@amazon.co.uk",
