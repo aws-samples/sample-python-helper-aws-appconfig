@@ -1,3 +1,11 @@
+"""
+Example application for AppConfigHelper
+
+Create the required AppConfig resources with the CloudFormation template.
+
+Run this file with `uvicorn main:app`
+"""
+
 from fastapi import FastAPI
 
 from appconfig_helper import AppConfigHelper

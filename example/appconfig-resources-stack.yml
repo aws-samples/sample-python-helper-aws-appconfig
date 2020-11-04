@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Launch AWS AppConfig resources for the sample Python AWS AppConfig helper example code
+
+Resources:
+  Application:
+    Type: AWS::AppConfig::Application
+    Properties:
+      Name: DemoApp
+      Description: AppConfig helper demo application
+
+  Environment:
+    Type: AWS::AppConfig::Environment
+    Properties:
+      ApplicationId: !Ref Application
+      Name: prod
+      Description: AppConfig helper demo environment
+
+  Profile:
+    Type: AWS::AppConfig::ConfigurationProfile
+    Properties:
+      LocationUri: hosted
+      ApplicationId: !Ref Application
+      Name: main
+      Description: AppConfig helper demo profile
+
+  ConfigVersion:
+    Type: AWS::AppConfig::HostedConfigurationVersion
+    Properties:
+      ConfigurationProfileId: !Ref Profile
+      ContentType: application/json
+      Content: |
+        {
+          "transform_reverse": true,
+          "transform_allcaps": false
+        }
+      ApplicationId: !Ref Application
+
+  DeploymentStrategy:
+    Type: AWS::AppConfig::DeploymentStrategy
+    Properties:
+      ReplicateTo: NONE
+      DeploymentDurationInMinutes: 0
+      GrowthFactor: 100
+      Name: AllAtOnceNoBake
+      FinalBakeTimeInMinutes: 0
+
+  Deployment:
+    Type: AWS::AppConfig::Deployment
+    Properties:
+      DeploymentStrategyId: !Ref DeploymentStrategy
+      ConfigurationProfileId: !Ref Profile
+      EnvironmentId: !Ref Environment
+      ConfigurationVersion: !Ref ConfigVersion
+      ApplicationId: !Ref Application
