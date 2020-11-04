@@ -65,6 +65,8 @@ The configuration from AWS AppConfig is available as the `config` property. Befo
 
 To read the values in your configuration, access the `config` property. For JSON and YAML configurations, this will contain the structure of your data. For plain text configurations, this will be a simple string.
 
+The original data received from AppConfig is available in the `raw_config` property. Accessing this property will not trigger an automatic update even if `fetch_on_read` is True. The content type field received from AppConfig is available in the `content_type` property.
+
 For example, with the following JSON in your AppConfig configuration profile:
 
 ```json

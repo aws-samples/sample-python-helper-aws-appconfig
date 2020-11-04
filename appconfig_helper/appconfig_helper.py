@@ -79,6 +79,8 @@ class AppConfigHelper:
         self._configuration_version = "null"  # type: str
         self._last_update_time = 0.0
         self._config = None  # type: Union[None, Dict[Any, Any], str, bytes]
+        self._raw_config = None  # type: Union[None, bytes]
+        self._content_type = None  # type: Union[None, str]
         self._fetch_on_read = fetch_on_read
         if fetch_on_init:
             self.update_config()
@@ -113,6 +115,19 @@ class AppConfigHelper:
             self.update_config()
         return self._config
 
+    @property
+    def raw_config(self) -> Union[None, bytes]:
+        """The application configuration content retrieved from AppConfig.
+
+        No processing is performed on this content. Accessing this property does not
+        trigger an update, even if `fetch_on_read` is True."""
+        return self._raw_config
+
+    @property
+    def content_type(self) -> Union[None, str]:
+        """The content type of the configuration retrieved from AppConfig."""
+        return self._content_type
+
     def update_config(self, force_update: bool = False) -> bool:
         """Request the lastest configration.
 
@@ -138,13 +153,15 @@ class AppConfigHelper:
             self._last_update_time = time.time()
             return False
 
+        content = response["Content"].read()  # type: bytes
+
         if response["ContentType"] == "application/x-yaml":
             if not yaml_available:
                 raise RuntimeError(
                     "Configuration in YAML format received and missing yaml library; pip install pyyaml?"
                 )
             try:
-                self._config = yaml.safe_load(response["Content"])
+                self._config = yaml.safe_load(content)
             except yaml.YAMLError as error:
                 message = "Unable to parse YAML configuration data"
                 if hasattr(error, "problem_mark"):
@@ -154,14 +171,16 @@ class AppConfigHelper:
                 raise ValueError(message) from error
         elif response["ContentType"] == "application/json":
             try:
-                self._config = json.loads(response["Content"].read().decode("utf-8"))
+                self._config = json.loads(content.decode("utf-8"))
             except json.JSONDecodeError as error:
                 raise ValueError(error.msg) from error
         elif response["ContentType"] == "text/plain":
-            self._config = response["Content"].read().decode("utf-8")
+            self._config = content.decode("utf-8")
         else:
-            self._config = response["Content"].read()
+            self._config = content
 
         self._last_update_time = time.time()
         self._configuration_version = response["ConfigurationVersion"]
+        self._raw_config = content
+        self._content_type = response["ContentType"]
         return True

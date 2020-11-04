@@ -78,6 +78,8 @@ def test_appconfig_init(appconfig_stub, mocker):
     assert a.config is None
     assert a.config_version == "null"
     assert a._last_update_time == 0.0
+    assert a.raw_config is None
+    assert a.content_type is None
 
 
 def test_appconfig_update(appconfig_stub, mocker):
@@ -93,6 +95,8 @@ def test_appconfig_update(appconfig_stub, mocker):
     assert result
     assert a.config == "hello"
     assert a.config_version == "1"
+    assert a.raw_config == b"hello"
+    assert a.content_type == "text/plain"
 
 
 def test_appconfig_update_interval(appconfig_stub, mocker):
@@ -133,11 +137,15 @@ def test_appconfig_force_update_same(appconfig_stub, mocker):
     assert result
     assert a.config == "hello"
     assert a.config_version == "1"
+    assert a.raw_config == b"hello"
+    assert a.content_type == "text/plain"
 
     result = a.update_config(force_update=True)
     assert not result
     assert a.config == "hello"
     assert a.config_version == "1"
+    assert a.raw_config == b"hello"
+    assert a.content_type == "text/plain"
 
 
 def test_appconfig_force_update_new(appconfig_stub, mocker):
@@ -158,11 +166,15 @@ def test_appconfig_force_update_new(appconfig_stub, mocker):
     assert result
     assert a.config == "hello"
     assert a.config_version == "1"
+    assert a.raw_config == b"hello"
+    assert a.content_type == "text/plain"
 
     result = a.update_config(force_update=True)
     assert result
     assert a.config == "world"
     assert a.config_version == "2"
+    assert a.raw_config == b"world"
+    assert a.content_type == "text/plain"
 
 
 def test_appconfig_fetch_on_init(appconfig_stub, mocker):
@@ -246,6 +258,7 @@ def test_appconfig_yaml(appconfig_stub, mocker):
     a.update_config()
     assert a.config == {"hello": "world"}
     assert a.config_version == "1"
+    assert a.content_type == "application/x-yaml"
 
 
 def test_appconfig_json(appconfig_stub, mocker):
@@ -260,6 +273,7 @@ def test_appconfig_json(appconfig_stub, mocker):
     a.update_config()
     assert a.config == {"hello": "world"}
     assert a.config_version == "1"
+    assert a.content_type == "application/json"
 
 
 def test_appconfig_client(appconfig_stub, mocker):
@@ -359,6 +373,8 @@ def test_unknown_content_type(appconfig_stub, mocker):
     a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
     a.update_config()
     assert a.config == b"hello world"
+    assert a.content_type == "image/jpeg"
+    assert a.raw_config == content_text
 
 
 def test_bad_request(appconfig_stub_ignore_pendng, mocker):
