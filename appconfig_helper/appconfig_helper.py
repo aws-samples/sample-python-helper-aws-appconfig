@@ -4,7 +4,6 @@ AppConfig Helper class
 
 
 import json
-import socket
 import time
 from typing import Any, Dict, Optional, Union
 
@@ -59,29 +58,25 @@ class AppConfigHelper:
         session: Optional[boto3.Session] = None,
         fetch_on_init: bool = False,
         fetch_on_read: bool = False,
-        client_id: Optional[str] = None,
     ) -> None:
 
         if isinstance(session, boto3.Session):
-            self._client = session.client("appconfig")
+            self._client = session.client("appconfigdata")
         else:
-            self._client = boto3.client("appconfig")
+            self._client = boto3.client("appconfigdata")
         self._appconfig_profile = appconfig_profile
         self._appconfig_environment = appconfig_environment
         self._appconfig_application = appconfig_application
         if max_config_age < 15:
             raise ValueError("max_config_age must be at least 15 seconds")
         self._max_config_age = max_config_age
-        if client_id is None:
-            self._client_id = socket.gethostname()
-        else:
-            self._client_id = client_id
-        self._configuration_version = "null"  # type: str
         self._last_update_time = 0.0
         self._config = None  # type: Union[None, Dict[Any, Any], str, bytes]
         self._raw_config = None  # type: Union[None, bytes]
         self._content_type = None  # type: Union[None, str]
         self._fetch_on_read = fetch_on_read
+        self._next_config_token = None  # type: Optional[str]
+        self._poll_interval = max_config_age
         if fetch_on_init:
             self.update_config()
 
@@ -99,11 +94,6 @@ class AppConfigHelper:
     def appconfig_application(self) -> str:
         """The application in use."""
         return self._appconfig_application
-
-    @property
-    def config_version(self) -> str:
-        """The configuration version last received."""
-        return self._configuration_version
 
     @property
     def config(self) -> Union[None, Dict[Any, Any], str, bytes]:
@@ -128,6 +118,17 @@ class AppConfigHelper:
         """The content type of the configuration retrieved from AppConfig."""
         return self._content_type
 
+    def start_session(self) -> None:
+        """Start the config session and receive the next config token and poll interval"""
+        response = self._client.start_configuration_session(
+            ApplicationIdentifier=self._appconfig_application,
+            ConfigurationProfileIdentifier=self._appconfig_profile,
+            EnvironmentIdentifier=self._appconfig_environment,
+            RequiredMinimumPollIntervalInSeconds=self._max_config_age,
+        )
+        self._next_config_token = response["InitialConfigurationToken"]
+        self._poll_interval = self._max_config_age
+
     def update_config(self, force_update: bool = False) -> bool:
         """Request the lastest configration.
 
@@ -137,23 +138,22 @@ class AppConfigHelper:
         indicates that no attempt was made, or that no new version was found.
         """
         if (
-            time.time() - self._last_update_time < self._max_config_age
+            time.time() - self._last_update_time < self._poll_interval
         ) and not force_update:
             return False
 
-        response = self._client.get_configuration(
-            Application=self._appconfig_application,
-            Environment=self._appconfig_environment,
-            Configuration=self._appconfig_profile,
-            ClientId=self._client_id,
-            ClientConfigurationVersion=self._configuration_version,
+        if self._next_config_token is None:
+            self.start_session()
+
+        response = self._client.get_latest_configuration(
+            ConfigurationToken=self._next_config_token
         )
+        self._next_config_token = response["NextPollConfigurationToken"]
+        self._poll_interval = int(response["NextPollIntervalInSeconds"])
 
-        if response["ConfigurationVersion"] == self._configuration_version:
-            self._last_update_time = time.time()
+        content = response["Configuration"].read()  # type: bytes
+        if content == b"":
             return False
-
-        content = response["Content"].read()  # type: bytes
 
         if response["ContentType"] == "application/x-yaml":
             if not yaml_available:
@@ -180,7 +180,6 @@ class AppConfigHelper:
             self._config = content
 
         self._last_update_time = time.time()
-        self._configuration_version = response["ConfigurationVersion"]
         self._raw_config = content
         self._content_type = response["ContentType"]
         return True
