@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.0.0 - 2021-11-19
+
+### Changed
+
+- Updated library to use new AppConfig Data API
+
+### Removed
+
+- Removed the `client_id` parameter for the AppConfigHelper class as it is no
+  longer used by the API
+- Removed the `config_version` property, as it is no longer returned by the API
+
 ## 1.1.0 - 2020-11-04
 
 ### Added
