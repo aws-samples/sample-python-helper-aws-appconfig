@@ -22,7 +22,7 @@ setup(
     url="https://github.com/aws-samples/sample-python-helper-aws-appconfig",
     keywords=["aws", "appconfig"],
     packages=find_packages(),
-    install_requires=["boto3 >= 1.10.27", "pyyaml"],
+    install_requires=["boto3 >= 1.20.8", "botocore >= 1.23.8", "pyyaml"],
     python_requires=">=3.6",
     license="OSI Approved (Apache-2.0)",
     classifiers=[
@@ -34,6 +34,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Typing :: Typed",
     ],
 )
