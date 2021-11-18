@@ -7,7 +7,7 @@ A sample helper Python library for AWS AppConfig which makes rolling configurati
 ## Features
 
 * Configurable update interval: you can ask the library to update your configuration as often as needed, but it will only call the AWS AppConfig API at the configured interval (in seconds).
-* Uses best practices for updates: the API is called with the version of the last received configuration, which results in a lower charge for the API call if no new configuration has been deployed. Automatically generates a client ID if you do not specify one.
+* Handles correct API usage: the library uses the new AppConfig Data API and handles tracking the next configuration token and poll interval for you.
 * Flexible: Can automatically fetch the current configuration on initialisation, every time the configuration is read by your code, or on demand. You can override the caching interval if needed.
 * Handles YAML, JSON and plain text configurations, stored in any supported AppConfig store. Any other content type is returned unprocessed as the Python `bytes` type.
 * Supports AWS Lambda, Amazon EC2 instances and on-premises use.
@@ -55,8 +55,6 @@ The configuration is not automatically fetched unless you set `fetch_on_init`. T
 
 If you need to customise the AWS credentials or region, set `session` to a configured `boto3.Session` object. Otherwise, the [standard boto3 logic](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html) for credential/configuration discovery is used.
 
-AWS AppConfig needs clients to specify a unique client ID to allow deployment strategies to work correctly. The library will automatically use the hostname, but you can override it with `client_id`. (The specific value does not matter, but it should be different for each client, and should not change.)
-
 ### Reading the configuration
 
 The configuration from AWS AppConfig is available as the `config` property. Before accessing it, you should call `update_config()`, unless you specified fetch_on_init or fetch_on_read during initialisation. If you want to force a config fetch, even if the number of seconds specified have not yet passed, call `update_config(True)`.
@@ -87,8 +85,6 @@ you would see the following when using the library:
 >>> appconfig.config["data"]
 {'is_sample': True}
 ```
-
-You can check which version of the configuration was last received by examining the `config_version` property. Note that this value is opaque and depends on the service being used to store the configuration data. For example, if Amazon S3 is being used, then the version will be the version identifier of the object, not an integer.
 
 ### Use in AWS Lambda
 
