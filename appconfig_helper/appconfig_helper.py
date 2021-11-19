@@ -157,15 +157,17 @@ class AppConfigHelper:
         if response["ContentType"] == "application/x-yaml":
             if not yaml_available:
                 raise RuntimeError(
-                    "Configuration in YAML format received and missing yaml library; pip install pyyaml?"
+                    "Configuration in YAML format received and missing "
+                    "yaml library; pip install pyyaml?"
                 )
             try:
                 self._config = yaml.safe_load(content)
             except yaml.YAMLError as error:
                 message = "Unable to parse YAML configuration data"
                 if hasattr(error, "problem_mark"):
-                    message = message + " at line {} column {}".format(
-                        error.problem_mark.line + 1, error.problem_mark.column + 1
+                    message = (
+                        f"{message} at line {error.problem_mark.line + 1} "
+                        f"column {error.problem_mark.column + 1}"
                     )
                 raise ValueError(message) from error
         elif response["ContentType"] == "application/json":
