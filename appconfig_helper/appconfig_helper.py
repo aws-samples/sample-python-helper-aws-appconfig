@@ -33,7 +33,8 @@ class AppConfigHelper:
     update the configuration. Set it low enough that your application
     receives new configuration in good time, but not so high that you are
     unnecessarily polling the AWS AppConfig service. A minimum of 15 seconds
-    is enforced to help avoid throttling.
+    is enforced to help avoid throttling. Note that the value can be updated
+    internally by the response from AppConfig.
 
     If you need to override credentials or AWS Region, set `session` to a
     preconfigured `boto3.Session` object.
@@ -44,8 +45,6 @@ class AppConfigHelper:
     If `fetch_on_read` is set, every time the `config` property is read, the
     configuration will be refreshed (if it has been at least `max_config_age`
     seconds since the last refresh).
-
-    Use `client_id` to override the default (the hostname).
     """
 
     def __init__(
