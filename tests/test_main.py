@@ -1,7 +1,9 @@
 # type: ignore
 
+import datetime
 import io
 import json
+import time
 
 import boto3
 import botocore
@@ -235,34 +237,74 @@ def test_appconfig_fetch_on_read(appconfig_stub, mocker):
     assert a._next_config_token == "token9012"
 
 
-@freeze_time("2020-08-01 12:00:00", auto_tick_seconds=10)
 def test_appconfig_fetch_interval(appconfig_stub, mocker):
-    client, stub, _ = appconfig_stub
-    _add_start_stub(stub)
-    stub.add_response(
-        "get_latest_configuration",
-        _build_response("hello", "text/plain", poll=15),
-        _build_request(),
-    )
-    stub.add_response(
-        "get_latest_configuration",
-        _build_response("world", "text/plain", poll=15, next_token="token1234"),
-        _build_request(next_token="token5678"),
-    )
-    mocker.patch.object(boto3, "client", return_value=client)
-    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
-    result = a.update_config()
-    assert result
-    assert a.config == "hello"
+    with freeze_time("2020-08-01 12:00:00") as frozen_time:
+        tick_amount = datetime.timedelta(seconds=10)
+        client, stub, _ = appconfig_stub
+        _add_start_stub(stub)
+        stub.add_response(
+            "get_latest_configuration",
+            _build_response("hello", "text/plain", poll=15),
+            _build_request(),
+        )
+        stub.add_response(
+            "get_latest_configuration",
+            _build_response("world", "text/plain", poll=15, next_token="token1234"),
+            _build_request(next_token="token5678"),
+        )
+        mocker.patch.object(boto3, "client", return_value=client)
+        a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
+        result = a.update_config()
+        update_time = time.time()
+        assert result
+        assert a.config == "hello"
+        assert a._last_update_time == update_time
 
-    result = a.update_config()
-    assert not result
-    assert a.config == "hello"
+        frozen_time.tick(tick_amount)
+        result = a.update_config()
+        assert not result
+        assert a.config == "hello"
+        assert a._last_update_time == update_time
 
-    result = a.update_config()
-    assert result
-    assert a.config == "world"
-    assert a._next_config_token == "token1234"
+        frozen_time.tick(tick_amount)
+        result = a.update_config()
+        assert result
+        assert a.config == "world"
+        assert a._next_config_token == "token1234"
+        assert a._last_update_time == time.time()
+
+
+def test_appconfig_fetch_no_change(appconfig_stub, mocker):
+    with freeze_time("2020-08-01 12:00:00") as frozen_time:
+        tick_amount = datetime.timedelta(seconds=10)
+        client, stub, _ = appconfig_stub
+        _add_start_stub(stub)
+        stub.add_response(
+            "get_latest_configuration",
+            _build_response("hello", "text/plain", poll=15),
+            _build_request(),
+        )
+        stub.add_response(
+            "get_latest_configuration",
+            _build_response("", "text/plain", poll=15, next_token="token1234"),
+            _build_request(next_token="token5678"),
+        )
+        mocker.patch.object(boto3, "client", return_value=client)
+        a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
+        result = a.update_config()
+        update_time = time.time()
+        assert result
+        assert a.config == "hello"
+        assert a._last_update_time == update_time
+
+        frozen_time.tick(tick_amount)
+        frozen_time.tick(tick_amount)
+
+        result = a.update_config()
+        assert not result
+        assert a.config == "hello"
+        assert a._next_config_token == "token1234"
+        assert a._last_update_time == time.time()
 
 
 def test_appconfig_yaml(appconfig_stub, mocker):

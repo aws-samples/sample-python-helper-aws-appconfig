@@ -152,6 +152,7 @@ class AppConfigHelper:
 
         content = response["Configuration"].read()  # type: bytes
         if content == b"":
+            self._last_update_time = time.time()
             return False
 
         if response["ContentType"] == "application/x-yaml":
