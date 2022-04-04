@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 20.0.2 - 2022-04-04
+
+This is a release to bump the pip package version, to correct the previous PyPI release not containing the correct revision of code. No other changes.
+
 ## 2.0.1 - 2022-01-11
 
 ### Fixed
