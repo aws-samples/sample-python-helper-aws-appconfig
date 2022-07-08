@@ -150,10 +150,10 @@ class AppConfigHelper:
                 ConfigurationToken=self._next_config_token
             )
         except botocore.exceptions.ClientError:
-                self.start_session()
-                response = self._client.get_latest_configuration(
-                    ConfigurationToken=self._next_config_token
-                )
+            self.start_session()
+            response = self._client.get_latest_configuration(
+                ConfigurationToken=self._next_config_token
+            )
 
         self._next_config_token = response["NextPollConfigurationToken"]
         self._poll_interval = int(response["NextPollIntervalInSeconds"])
