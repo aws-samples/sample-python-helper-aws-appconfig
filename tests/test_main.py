@@ -198,6 +198,43 @@ def test_appconfig_force_update_new(appconfig_stub, mocker):
     assert a._poll_interval == 30
 
 
+def test_appconfig_update_bad_request(appconfig_stub, mocker):
+    client, stub, _ = appconfig_stub
+    _add_start_stub(stub)
+    stub.add_response(
+        "get_latest_configuration",
+        _build_response("hello", "text/plain", next_token="token5678"),
+        _build_request(),
+    )
+    stub.add_client_error(
+        "get_latest_configuration",
+        service_error_code="BadRequestException",
+    )
+    _add_start_stub(stub)
+    stub.add_response(
+        "get_latest_configuration",
+        _build_response("world", "text/plain", next_token="token9012"),
+        _build_request(),
+    )
+    mocker.patch.object(boto3, "client", return_value=client)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
+    result = a.update_config()
+    assert result
+    assert a.config == "hello"
+    assert a.raw_config == b"hello"
+    assert a.content_type == "text/plain"
+    assert a._next_config_token == "token5678"
+    assert a._poll_interval == 30
+
+    result = a.update_config(force_update=True)
+    assert result
+    assert a.config == "world"
+    assert a.raw_config == b"world"
+    assert a.content_type == "text/plain"
+    assert a._next_config_token == "token9012"
+    assert a._poll_interval == 30
+
+
 def test_appconfig_fetch_on_init(appconfig_stub, mocker):
     client, stub, _ = appconfig_stub
     _add_start_stub(stub)
