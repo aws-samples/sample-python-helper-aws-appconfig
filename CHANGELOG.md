@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## 20.0.2 - 2022-04-04
+## 2.0.3 - 2022-07-19
+
+### Fixed
+
+- Fixed an issue where the library would get stuck if it needed to create a new
+  session in order to continue (reported and contributed by @BiochemLouis in #5
+  and #6)
+
+## 2.0.2 - 2022-04-04
 
 This is a release to bump the pip package version, to correct the previous PyPI release not containing the correct revision of code. No other changes.
 
