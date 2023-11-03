@@ -13,7 +13,6 @@ classifiers=[
     "Intended Audience :: Developers",
     "License :: OSI Approved",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -27,14 +26,14 @@ packages = [ { include="appconfig_helper" } ]
 
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 boto3 = "^1.20.8"
 botocore = "^1.23.8"
 PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
 boto3-stubs = "^1.20.8"
-pytest = "^6.2.5"
+pytest = "^7.4.0"
 pytest-mock = "^3.6.1"
 freezegun = "^1.1.0"
 
