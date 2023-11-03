@@ -9,11 +9,11 @@ jobs:
     name: Python 3.8
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4.1.1
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4.7.1
         with:
-          python-version: 3.8
+          python-version: 3.12
           architecture: x64
       - name: Update pip
         run: pip install --upgrade pip
