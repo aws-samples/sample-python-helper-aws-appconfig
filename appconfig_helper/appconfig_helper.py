@@ -59,7 +59,6 @@ class AppConfigHelper:
         fetch_on_init: bool = False,
         fetch_on_read: bool = False,
     ) -> None:
-
         if isinstance(session, boto3.Session):
             self._client = session.client("appconfigdata")
         else:
