@@ -2,7 +2,6 @@
 AppConfig Helper class
 """
 
-
 import json
 import time
 from typing import Any, Dict, Optional, Union
