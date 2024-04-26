@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.1.1 - 2024-04-26
+
+### Changed
+
+- Include py.typed file to indicate the library is typed per PEP-561.
+- No code changes.
+
 ## 2.1.0 - 2023-11-03
 
 ### Changed
