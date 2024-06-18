@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.1.2 - 2024-06-18
+
+### Changed
+
+- Bump urllib3 dependency due to security issue.
+- Add missing explicit export for mypy (#15)
+- No functionality changes.
+
 ## 2.1.1 - 2024-04-26
 
 ### Changed
