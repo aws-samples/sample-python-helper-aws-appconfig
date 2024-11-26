@@ -75,6 +75,7 @@ class AppConfigHelper:
         self._fetch_on_read = fetch_on_read
         self._next_config_token = None  # type: Optional[str]
         self._poll_interval = max_config_age
+        self._version_label = None  # type: Optional[str]
         if fetch_on_init:
             self.update_config()
 
@@ -115,6 +116,11 @@ class AppConfigHelper:
     def content_type(self) -> Union[None, str]:
         """The content type of the configuration retrieved from AppConfig."""
         return self._content_type
+
+    @property
+    def version_label(self) -> Optional[str]:
+        """The version label of the configuration retrieved from AppConfig."""
+        return self._version_label
 
     def start_session(self) -> None:
         """Start the config session and receive the next config token and poll interval"""
@@ -190,4 +196,5 @@ class AppConfigHelper:
         self._last_update_time = time.time()
         self._raw_config = content
         self._content_type = response["ContentType"]
+        self._version_label = response["VersionLabel"]
         return True

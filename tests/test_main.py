@@ -39,7 +39,9 @@ def _build_request(next_token="token1234"):
     return {"ConfigurationToken": next_token}
 
 
-def _build_response(content, content_type, next_token="token5678", poll=30):
+def _build_response(
+    content, content_type, next_token="token5678", poll=30, version_label="v1"
+):
     if content_type == "application/json":
         content_text = json.dumps(content).encode("utf-8")
     elif content_type == "application/x-yaml":
@@ -53,6 +55,7 @@ def _build_response(content, content_type, next_token="token5678", poll=30):
         "ContentType": content_type,
         "NextPollConfigurationToken": next_token,
         "NextPollIntervalInSeconds": poll,
+        "VersionLabel": version_label,
     }
 
 
@@ -471,3 +474,17 @@ def test_bad_interval(appconfig_stub, mocker):
     mocker.patch.object(boto3, "client", return_value=client)
     with pytest.raises(ValueError):
         _ = AppConfigHelper("Any", "Any", "Any", 10)
+
+
+def test_version_label(appconfig_stub, mocker):
+    client, stub, session = appconfig_stub
+    _add_start_stub(stub)
+    stub.add_response(
+        "get_latest_configuration",
+        _build_response(content="test", content_type="text/plain"),
+        _build_request(),
+    )
+    mocker.patch.object(boto3, "client", return_value=client)
+    a = AppConfigHelper("AppConfig-App", "AppConfig-Env", "AppConfig-Profile", 15)
+    a.update_config()
+    assert a.version_label == "v1"
