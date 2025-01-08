@@ -4,7 +4,7 @@ AppConfig Helper class
 
 import json
 import time
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union, cast
 
 import boto3
 import botocore
@@ -196,5 +196,5 @@ class AppConfigHelper:
         self._last_update_time = time.time()
         self._raw_config = content
         self._content_type = response["ContentType"]
-        self._version_label = response["VersionLabel"]
+        self._version_label = cast(Optional[str], response.get("VersionLabel"))
         return True

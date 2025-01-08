@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sample-helper-aws-appconfig"
-version = "2.2.0"
+version = "2.2.1"
 description = "Sample helper library for AWS AppConfig"
 authors = ["Amazon Web Services"]
 maintainers = ["James Seward <sewardjm@amazon.co.uk>"]
