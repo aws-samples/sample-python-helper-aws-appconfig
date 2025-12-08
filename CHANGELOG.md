@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.3.0 - 2025-12-08
+
+- Removed Python 3.8 and 3.9 from supported versions
+- Added Python 3.13 and 3.14
+- Update boto3
+- Pin urllib3 version for a vulnerability
+
 ## 2.2.1 - 2025-01-08
 
 - Handle `VersionLabel` not being present in API response gracefully
