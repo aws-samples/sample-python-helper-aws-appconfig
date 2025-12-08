@@ -13,12 +13,11 @@ classifiers=[
     "Intended Audience :: Developers",
     "License :: OSI Approved",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Typing :: Typed",
 ]
 packages = [ { include="appconfig_helper" } ]
@@ -26,12 +25,12 @@ packages = [ { include="appconfig_helper" } ]
 
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.10"
 boto3 = "^1.20.8"
-botocore = "^1.23.8"
 PyYAML = "^6.0"
+botocore = {version = "^1.42.4", extras = ["crt"]}
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 boto3-stubs = "^1.20.8"
 pytest = "^7.4.0"
 pytest-mock = "^3.6.1"
