@@ -418,9 +418,7 @@ def test_bad_yaml(appconfig_stub, mocker):
     broken:
         - yaml
     - content
-    """.encode(
-        "utf-8"
-    )
+    """.encode("utf-8")
     _add_start_stub(stub)
     broken_response = _build_response({}, "application/x-yaml")
     broken_response["Configuration"] = StreamingBody(
